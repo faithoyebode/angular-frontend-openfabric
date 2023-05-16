@@ -2,7 +2,7 @@ import {Component, Input} from '@angular/core';
 import {ProductDetail} from "../../interfaces/productdetail";
 import {CommonModule} from "@angular/common";
 import {MatCardModule} from '@angular/material/card';
-import { Router, ActivatedRoute, ParamMap } from '@angular/router';
+import { Router } from '@angular/router';
 
 @Component({
   standalone: true,
@@ -75,6 +75,6 @@ export class ProductTileComponent {
   }
 
   handleClick(){
-    this.router.navigate([`/products/${this.product.id}`]);
+    this.router.navigate([`/products/${this.product._id}`]);
   }
 }

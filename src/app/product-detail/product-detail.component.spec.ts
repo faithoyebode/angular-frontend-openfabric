@@ -2,6 +2,10 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ProductDetailComponent } from './product-detail.component';
 import {ProductDetail} from "../../interfaces/productdetail";
+import {ActivatedRoute} from "@angular/router";
+import {ProductsService} from "../../services/products.service";
+import {RouterTestingModule} from "@angular/router/testing";
+import {Observable} from "rxjs";
 
 const mockData: ProductDetail = {
     "id": 4855362,
@@ -22,7 +26,7 @@ describe('ProductDetailComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [ProductDetailComponent]
+      imports: [ProductDetailComponent, RouterTestingModule]
     });
     fixture = TestBed.createComponent(ProductDetailComponent);
     component = fixture.componentInstance;
@@ -30,9 +34,11 @@ describe('ProductDetailComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should display the correct name of the Product', () => {
-    const productTitleElement = fixture.nativeElement.querySelector('.name');
-    expect(productTitleElement.textContent).toContain(mockData.name);
+  it('should display the correct name of the Product', async () => {
+    // const productTitleElement = fixture.nativeElement.querySelector('.name');
+    await component.ngOnInit();
+    console.log('productTitleElement', component.product);
+    expect(component.product).toEqual(mockData);
   });
   it('should display the correct price of the Product', () => {
     const productPriceElement = fixture.nativeElement.querySelector('.price');

@@ -7,7 +7,6 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "noImplicitOverride": true,
-    "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "sourceMap": true,
@@ -22,6 +21,7 @@
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "strictPropertyInitialization": false,
+    "noPropertyAccessFromIndexSignature": false,
     "lib": [
       "ES2020",
       "dom"

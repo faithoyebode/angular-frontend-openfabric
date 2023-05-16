@@ -20,7 +20,6 @@ describe('HomeComponent', () => {
 
   it('should render at least one product tile component', () => {
     const productTileElement = fixture.nativeElement.querySelector('app-product-tile');
-    console.log('productTileElement', productTileElement);
     expect(productTileElement).toBeTruthy();
   });
 });
