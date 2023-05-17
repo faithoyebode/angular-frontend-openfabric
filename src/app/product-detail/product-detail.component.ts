@@ -89,9 +89,10 @@ export class ProductDetailComponent {
         ...this.product
       }
     });
-
+    dialogRef.componentInstance.onSave.subscribe((data) => {this.product = data});
     dialogRef.afterClosed().subscribe(result => {
-      console.log(`Dialog result: ${result}`);
+      console.log("Dialog result", result);
     });
+
   }
 }

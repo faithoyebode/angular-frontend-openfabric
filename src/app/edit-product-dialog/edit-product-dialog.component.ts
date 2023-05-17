@@ -1,4 +1,4 @@
-import {Component, Inject} from '@angular/core';
+import {Component, EventEmitter, Inject} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogModule} from '@angular/material/dialog';
 import {ProductsService} from "../../services/products.service";
@@ -8,7 +8,7 @@ import {MatInputModule} from "@angular/material/input";
 import {MatButtonModule} from "@angular/material/button";
 import {CloudinaryModule} from '@cloudinary/ng';
 import {Cloudinary} from "@cloudinary/url-gen";
-import {HttpClient, HttpClientModule} from "@angular/common/http";
+import {HttpClient, HttpClientModule, HttpHeaders} from "@angular/common/http";
 import {ProductDetail} from "../../interfaces/productdetail";
 
 
@@ -33,7 +33,7 @@ import {ProductDetail} from "../../interfaces/productdetail";
       </mat-dialog-actions>
     </div>
     <mat-dialog-content class="mat-typography" width="80vw">
-      <form [formGroup]="addProductForm" (ngSubmit)="onSubmit()">
+      <form [formGroup]="editProductForm" (ngSubmit)="onSubmit()">
         <div>
           <mat-form-field appearance="outline">
             <mat-label>Product Name</mat-label>
@@ -66,7 +66,12 @@ import {ProductDetail} from "../../interfaces/productdetail";
             </div>
           </div>
         </div>
-        <button mat-raised-button type="submit" color="primary">Save Changes</button>
+        <button mat-raised-button type="submit" color="primary">
+          <span *ngIf="submitting; else defaultState">Updating...</span>
+        </button>
+        <ng-template #defaultState>
+          <span>Save Changes</span>
+        </ng-template>
       </form>
     </mat-dialog-content>
 
@@ -117,33 +122,36 @@ export class EditProductDialogComponent {
     private http: HttpClient,
     @Inject(MAT_DIALOG_DATA) public data: ProductDetail
   ){}
+  submitting: boolean;
   imagePreview:string;
-  file: File | null;
-  cld: Cloudinary;
-  addProductForm = this.fb.group({
+  onSave = new EventEmitter();
+  editProductForm = this.fb.group({
     name: [this.data.name, [Validators.required]],
     price: [this.data.price, [Validators.required]],
     image: [this.data.image, [Validators.required]]
   }, );
 
-  get name() { return this.addProductForm.get('name'); }
-  get price() { return this.addProductForm.get('price'); }
-  get image() { return this.addProductForm.get('image'); }
+  get name() { return this.editProductForm.get('name'); }
+  get price() { return this.editProductForm.get('price'); }
+  get image() { return this.editProductForm.get('image'); }
 
   onSubmit(){
-    console.log("form value", this.addProductForm.value);
-    const timestamp = Math.round((new Date).getTime()/1000);
-    const signature = `timestamp=${timestamp}`
-    this.http.post<any>("https://api.cloudinary.com/v1_1/faithoyebode/image/upload",
-      JSON.stringify({file: this.imagePreview, api_key: "481452747666296", timestamp, upload_preset: "rgefyvke"}),
-      {headers: { "Content-Type": "multipart/form-data"}}).subscribe({
-      next: (data) => {
-        console.log("cloudinary response", data);
-      },
-      error: (error) => {
-        console.log("cloudinary error", error);
-      }
-    })
+    this.submitting = true;
+    console.log("form value", this.editProductForm.value);
+    const headers = new HttpHeaders({'Content-Type': 'application/json'});
+    this.data.image === this.editProductForm.get('image') ?
+      (() => {
+        this.productService.updateProduct({...this.editProductForm.value, _id: this.data._id});
+        this.submitting = false;
+        this.save();
+      })() :
+      this.http.post<any>("https://api.cloudinary.com/v1_1/faithoyebode/image/upload",
+        JSON.stringify({file: this.imagePreview, upload_preset: "rgefyvke"}), {headers}).subscribe(
+        (res) => {
+            this.productService.updateProduct({...this.editProductForm.value,  _id: this.data._id, image: res.url});
+            this.submitting = false;
+            this.save(res.url);
+        })
     // this.addProductForm.reset();
   }
   uploadFile(event: Event){
@@ -154,15 +162,20 @@ export class EditProductDialogComponent {
       reader.readAsDataURL(file as Blob);
       // When file uploads set it to file formcontrol
       reader.onload = () => {
-        this.addProductForm.patchValue({ image: reader.result as string });
+        this.editProductForm.patchValue({ image: reader.result as string });
         this.imagePreview = (reader.result as string)?.toString();
       };
+    }
+  }
+  save(imageUrl?: string) {
+    if(imageUrl){
+      this.onSave.emit({...this.editProductForm.value, _id: this.data._id, image: imageUrl})
+    }else{
+      this.onSave.emit({...this.editProductForm.value, _id: this.data._id})
     }
   }
   ngOnInit(){
     this.imagePreview = this.data.image;
   }
-  ngAfterViewInit(){
-    console.log('image errors', this?.price?.errors);
-  }
+
 }

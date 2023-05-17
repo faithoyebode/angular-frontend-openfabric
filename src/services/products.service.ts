@@ -49,7 +49,7 @@ export class ProductsService {
       .put<{[key: string]: any}>(
         `http://localhost:4000/api/products/${item._id}`, JSON.stringify(item), {headers}).subscribe(
         (res) => {
-          console.log("new addition", res);
+          console.log("updated product", res);
         });
   }
 
