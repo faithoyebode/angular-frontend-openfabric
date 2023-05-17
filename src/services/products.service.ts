@@ -16,7 +16,7 @@ export class ProductsService {
   allProducts: ProductDetail[];
   getProducts(){
     return this.http
-      .get<{[key: string]: any}>("http://localhost:4000/api/products")
+      .get<{[key: string]: any}>("https://angular-backend-openfabric.onrender.com/products")
       .pipe(map((res) => {
         this.allProducts = res.data;
         return res.data;
@@ -37,7 +37,7 @@ export class ProductsService {
     const headers = new HttpHeaders({'Content-Type': 'application/json'})
     return this.http
       .post<{[key: string]: any}>(
-        "http://localhost:4000/api/products", JSON.stringify(item), {headers}).subscribe(
+        "https://angular-backend-openfabric.onrender.com/products", JSON.stringify(item), {headers}).subscribe(
           (res) => {
         console.log("new addition", res);
       });
@@ -47,7 +47,7 @@ export class ProductsService {
     const headers = new HttpHeaders({'Content-Type': 'application/json'})
     return this.http
       .put<{[key: string]: any}>(
-        `http://localhost:4000/api/products/${item._id}`, JSON.stringify(item), {headers}).subscribe(
+        `https://angular-backend-openfabric.onrender.com/products/${item._id}`, JSON.stringify(item), {headers}).subscribe(
         (res) => {
           console.log("updated product", res);
         });
