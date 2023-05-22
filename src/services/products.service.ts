@@ -7,25 +7,16 @@ import {map, throwError} from "rxjs";
   providedIn: 'root'
 })
 export class ProductsService {
-  constructor(private http: HttpClient) {
-    this.getProducts().subscribe((products) => {
-      console.log("constructor data", products);
-      this.allProducts = products;
-    });
-  }
-  allProducts: ProductDetail[];
+  constructor(private http: HttpClient) {}
+  allProducts: ProductDetail[] = [];
   getProducts(){
     return this.http
-      .get<{[key: string]: any}>("https://angular-backend-openfabric.onrender.com/api/products")
-      .pipe(map((res) => {
-        this.allProducts = res.data;
-        return res.data;
-      }));
+      .get<{[key: string]: any}>("https://angular-backend-openfabric.onrender.com/api/products");
   }
 
 
   getProductById(id: string): ProductDetail | {[key: string]: any;} {
-    const result = this.allProducts.find((item) => item._id === id);
+    const result = this.allProducts?.find((item) => item._id === id);
     if(result){
       return result;
     }else{

@@ -6,6 +6,7 @@ import {ProductsService} from "../../services/products.service";
 import {MatDialog, MatDialogModule} from "@angular/material/dialog";
 import {AddProductDialogComponent} from "../add-product-dialog/add-product-dialog.component";
 import {ProductDetail} from "../../interfaces/productdetail";
+import {HttpClient} from "@angular/common/http";
 
 @Component({
   selector: 'app-home',
@@ -64,7 +65,7 @@ import {ProductDetail} from "../../interfaces/productdetail";
   ]
 })
 export class HomeComponent {
-  constructor(public productService: ProductsService, public dialog: MatDialog) {}
+  constructor(public productService: ProductsService, public dialog: MatDialog, private http: HttpClient) {}
   allProducts: ProductDetail[];
   openDialog() {
     const dialogRef = this.dialog.open(AddProductDialogComponent, {
@@ -79,8 +80,8 @@ export class HomeComponent {
 
   fetchProduct(){
     this.productService.getProducts().subscribe((products) => {
-      this.allProducts = products;
-      this.productService.allProducts = products;
+      this.allProducts = products.data;
+      this.productService.allProducts = products.data;
     })
   }
 
